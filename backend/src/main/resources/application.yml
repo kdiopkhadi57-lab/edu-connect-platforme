@@ -1,0 +1,47 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: educonnect
+  datasource:
+    url: jdbc:h2:file:./data/educonnect;AUTO_SERVER=TRUE
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate.default_batch_fetch_size: 50
+  h2:
+    console:
+      enabled: true
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 500MB
+
+app:
+  upload-dir: ./uploads
+  cors-origins: http://localhost:4200
+  seed-demo-data: true
+  jwt:
+    # À remplacer en production (variable d'environnement APP_JWT_SECRET, 32+ caractères)
+    secret: ${APP_JWT_SECRET:change-me-educonnect-dev-secret-key-0123456789}
+    expiration-hours: 168
+
+---
+spring:
+  config:
+    activate:
+      on-profile: postgres
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/educonnect}
+    username: ${DB_USER:educonnect}
+    password: ${DB_PASSWORD:educonnect}
+  h2:
+    console:
+      enabled: false
+app:
+  seed-demo-data: ${SEED_DEMO_DATA:false}

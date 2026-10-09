@@ -1,0 +1,11 @@
+.composer { display: flex; flex-direction: column; gap: 12px; }
+.fake-input { flex: 1; padding: 11px 16px; border-radius: 999px; background: var(--surface-2); color: var(--muted); }
+.quick { display: flex; gap: 8px; flex-wrap: wrap; }
+.between { justify-content: space-between; }
+.filters { gap: 12px; }
+.filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pills { display: flex; gap: 8px; flex-wrap: wrap;
+  button { border: 1px solid var(--border); background: var(--surface); color: var(--text); padding: 6px 14px;
+    border-radius: 999px; cursor: pointer; font: inherit; font-size: 14px; }
+  .on { background: var(--primary); border-color: var(--primary); color: #fff; } }
+@media (max-width: 520px) { .filter-grid { grid-template-columns: 1fr; } }

@@ -1,0 +1,99 @@
+@let post = p();
+<article class="card post">
+  <header class="post-head">
+    <a [routerLink]="['/profil', post.author.id]"><app-avatar [name]="post.author.fullName" [size]="42" /></a>
+    <div class="who">
+      <a class="name" [routerLink]="['/profil', post.author.id]">{{ post.author.fullName }}</a>
+      <div class="sub">
+        {{ post.author.roleLabel }}
+        @if (post.author.institution) { · {{ post.author.institution }} }
+        · {{ post.createdAt | timeAgo }}
+      </div>
+    </div>
+    <span class="type-badge" [attr.data-type]="post.type">{{ icon() }} {{ post.typeLabel }}</span>
+  </header>
+
+  <a class="title" [routerLink]="['/publication', post.id]">{{ post.title }}</a>
+
+  <div class="chips">
+    @if (post.field) { <span class="chip">{{ post.field.icon }} {{ post.field.name }}</span> }
+    @if (post.levelLabel) { <span class="chip">🎓 {{ post.levelLabel }}</span> }
+    @if (post.serie) { <span class="chip">Série {{ post.serie }}</span> }
+    @if (post.communityName) {
+      <a class="chip chip-link" [routerLink]="['/communaute', post.communityId]">👥 {{ post.communityName }}</a>
+    }
+  </div>
+
+  @if (post.content) {
+    <p class="content" [class.clamped]="!full() && longContent() && !expanded()">{{ post.content }}</p>
+    @if (!full() && longContent() && !expanded()) {
+      <button class="link-btn" (click)="expanded.set(true)">Lire la suite</button>
+    }
+  }
+
+  @if (embedUrl(); as src) {
+    <div class="embed"><iframe [src]="src" title="Vidéo" allowfullscreen loading="lazy"></iframe></div>
+  } @else if (post.videoUrl) {
+    <a class="ext-link" [href]="post.videoUrl" target="_blank" rel="noopener">▶ Voir la vidéo</a>
+  }
+
+  @for (v of videos(); track v.id) {
+    <video class="media" [src]="v.url" controls preload="metadata"></video>
+  }
+
+  @if (images().length) {
+    <div class="gallery" [class.single]="images().length === 1">
+      @for (img of images(); track img.id) {
+        <a [href]="img.url" target="_blank" rel="noopener"><img [src]="img.url" [alt]="img.name" loading="lazy" /></a>
+      }
+    </div>
+  }
+
+  @if (files().length) {
+    <ul class="files">
+      @for (f of files(); track f.id) {
+        <li>
+          <span class="f-icon">{{ fileIcon(f) }}</span>
+          <a class="f-name" [href]="f.url" target="_blank" rel="noopener">{{ f.name }}</a>
+          <span class="f-size">{{ f.size | fileSize }}</span>
+          <a class="btn btn-sm" [href]="f.url + '?download=true'" download>Télécharger</a>
+        </li>
+      }
+    </ul>
+  }
+
+  @if (post.hasSolution) {
+    <div class="solution">
+      <button class="btn btn-sm btn-outline" (click)="showSolution.set(!showSolution())">
+        {{ showSolution() ? 'Masquer le corrigé' : '💡 Voir le corrigé' }}
+      </button>
+      @if (showSolution()) { <p class="solution-text">{{ post.solution }}</p> }
+    </div>
+  }
+
+  @if (post.tags.length) {
+    <div class="tags">
+      @for (t of post.tags; track t) {
+        <a [routerLink]="['/explorer']" [queryParams]="{ q: t }">#{{ t }}</a>
+      }
+    </div>
+  }
+
+  <footer class="actions">
+    <button class="act" [class.on]="post.likedByMe" (click)="toggleLike()" title="J'apprécie">
+      {{ post.likedByMe ? '❤️' : '🤍' }} {{ post.likeCount }}
+    </button>
+    <a class="act" [routerLink]="['/publication', post.id]" title="Commenter">💬 {{ post.commentCount }}</a>
+    @if (post.attachments.length) {
+      <span class="act muted" title="Téléchargements">⬇ {{ post.downloadCount }}</span>
+    }
+    <span class="spacer"></span>
+    <button class="act" [class.on]="post.bookmarkedByMe" (click)="toggleBookmark()" title="Enregistrer">
+      {{ post.bookmarkedByMe ? '🔖 Enregistré' : '🔖' }}
+    </button>
+    <button class="act" (click)="share()" title="Partager">↗</button>
+    @if (post.mine) {
+      <button class="act danger" (click)="remove()" title="Supprimer">🗑</button>
+    }
+  </footer>
+</article>

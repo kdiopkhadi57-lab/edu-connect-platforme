@@ -1,0 +1,26 @@
+<section class="hero">
+  <h1>🎓 EduConnect</h1>
+  <p>Le réseau social des élèves, étudiants et apprenants — toutes écoles, universités et centres de formation confondus.</p>
+  <ul>
+    <li>📄 Partage cours, documents et sujets d'examen</li>
+    <li>🎬 Publie et regarde des vidéos explicatives</li>
+    <li>✏️ Échange des exercices avec leurs corrigés</li>
+    <li>👥 Retrouve automatiquement ceux qui suivent le même parcours que toi</li>
+  </ul>
+</section>
+<section class="panel">
+  <form class="box card stack" (ngSubmit)="submit()" #f="ngForm">
+    <h1>Connexion</h1>
+    @if (error()) { <div class="alert">{{ error() }}</div> }
+    <label class="field">E-mail
+      <input type="email" name="email" [(ngModel)]="email" required autocomplete="email" />
+    </label>
+    <label class="field">Mot de passe
+      <input type="password" name="password" [(ngModel)]="password" required autocomplete="current-password" />
+    </label>
+    <button class="btn btn-block" [disabled]="f.invalid || loading()">{{ loading() ? 'Connexion…' : 'Se connecter' }}</button>
+    <p class="muted small">Pas encore de compte ? <a routerLink="/inscription">Inscris-toi gratuitement</a></p>
+    <div class="demo">Comptes de démo : <strong>awa&#64;demo.sn</strong>, <strong>fatou&#64;demo.sn</strong>,
+      <strong>prof&#64;demo.sn</strong> — mot de passe <strong>password123</strong></div>
+  </form>
+</section>

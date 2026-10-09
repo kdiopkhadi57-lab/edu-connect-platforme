@@ -1,0 +1,54 @@
+<header class="topbar">
+  <a class="logo" routerLink="/">🎓 <span>EduConnect</span></a>
+  <form class="search" (ngSubmit)="doSearch()">
+    <input name="q" [(ngModel)]="search" placeholder="Rechercher un cours, un exercice, un sujet…" />
+  </form>
+  <a class="btn publish" routerLink="/publier">＋ <span>Publier</span></a>
+  @if (auth.user(); as u) {
+    <div class="me">
+      <button class="me-btn" (click)="menuOpen.set(!menuOpen())" aria-label="Mon compte">
+        <app-avatar [name]="u.fullName" [size]="36" />
+      </button>
+      @if (menuOpen()) {
+        <div class="menu card" (click)="menuOpen.set(false)">
+          <strong>{{ u.fullName }}</strong>
+          <span class="muted small">{{ u.levelLabel }} · {{ u.field?.name }}</span>
+          <a [routerLink]="['/profil', u.id]">Mon profil</a>
+          <a routerLink="/profil/modifier">Modifier mon parcours</a>
+          <button (click)="auth.logout()">Se déconnecter</button>
+        </div>
+      }
+    </div>
+  }
+</header>
+
+<div class="layout">
+  <nav class="sidebar">
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">🏠 Pour toi</a>
+    <a routerLink="/explorer" routerLinkActive="active">🔎 Explorer</a>
+    <a routerLink="/communautes" routerLinkActive="active">👥 Communautés</a>
+    <a routerLink="/enregistres" routerLinkActive="active">🔖 Enregistrés</a>
+
+    <h3>Mes communautés</h3>
+    <p class="muted small explain">Rejointes automatiquement selon ton parcours.</p>
+    @for (c of communities(); track c.id) {
+      <a class="community" [routerLink]="['/communaute', c.id]" routerLinkActive="active">
+        <span>{{ communityIcon(c) }}</span>
+        <span class="c-name">{{ c.name }}</span>
+        <span class="c-count">{{ c.memberCount }}</span>
+      </a>
+    }
+  </nav>
+
+  <main class="main">
+    <router-outlet />
+  </main>
+</div>
+
+<nav class="bottom-nav">
+  <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">🏠<span>Accueil</span></a>
+  <a routerLink="/explorer" routerLinkActive="active">🔎<span>Explorer</span></a>
+  <a routerLink="/publier" routerLinkActive="active">＋<span>Publier</span></a>
+  <a routerLink="/communautes" routerLinkActive="active">👥<span>Groupes</span></a>
+  <a routerLink="/enregistres" routerLinkActive="active">🔖<span>Enregistrés</span></a>
+</nav>

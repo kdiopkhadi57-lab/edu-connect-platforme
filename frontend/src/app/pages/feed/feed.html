@@ -1,0 +1,77 @@
+<div class="stack">
+  @if (mode() === 'feed') {
+    <div class="card composer">
+      <div class="row">
+        @if (auth.user(); as u) { <app-avatar [name]="u.fullName" [size]="42" /> }
+        <a class="fake-input" routerLink="/publier">Partage un cours, un exercice, une vidéo…</a>
+      </div>
+      <div class="quick">
+        @for (q of quickTypes; track q.type) {
+          <a class="btn btn-sm btn-ghost" routerLink="/publier" [queryParams]="{ type: q.type }">{{ q.label }}</a>
+        }
+      </div>
+    </div>
+    <div class="tabs">
+      <a class="active">Pour toi</a>
+      <a routerLink="/explorer">Explorer tout</a>
+    </div>
+  } @else {
+    <div class="card stack filters">
+      <div class="row between">
+        <h1>Explorer</h1>
+        @if (hasFilters()) { <button class="btn btn-sm btn-ghost" (click)="resetFilters()">Réinitialiser</button> }
+      </div>
+      <form (ngSubmit)="applyFilters()">
+        <input name="q" [(ngModel)]="filters.q" placeholder="Mots-clés : intégrales, SQL, comptabilité analytique…" />
+      </form>
+      <div class="pills">
+        <button [class.on]="!filters.cycle" (click)="setCycle(null)">Tous</button>
+        @for (c of cycles; track c.code) {
+          <button [class.on]="filters.cycle === c.code" (click)="setCycle(c.code)">{{ c.label }}</button>
+        }
+      </div>
+      <div class="filter-grid">
+        <select name="fieldId" [(ngModel)]="filters.fieldId" (ngModelChange)="applyFilters()">
+          <option [ngValue]="null">Tous les domaines</option>
+          @for (f of ref()?.fields; track f.id) { <option [ngValue]="f.id">{{ f.icon }} {{ f.name }}</option> }
+        </select>
+        <select name="level" [(ngModel)]="filters.level" (ngModelChange)="applyFilters()">
+          <option [ngValue]="null">Tous les niveaux</option>
+          @for (l of levelsForCycle(); track l.code) { <option [ngValue]="l.code">{{ l.label }}</option> }
+        </select>
+        <select name="type" [(ngModel)]="filters.type" (ngModelChange)="applyFilters()">
+          <option [ngValue]="null">Tous les types</option>
+          @for (t of ref()?.postTypes; track t.code) { <option [ngValue]="t.code">{{ t.label }}</option> }
+        </select>
+        <select name="serie" [(ngModel)]="filters.serie" (ngModelChange)="applyFilters()">
+          <option [ngValue]="null">Toutes les séries</option>
+          @for (s of ref()?.series; track s) { <option [ngValue]="s">{{ s }}</option> }
+        </select>
+      </div>
+      <div class="tabs">
+        <button [class.active]="filters.sort !== 'popular'" (click)="filters.sort = 'recent'; applyFilters()">Plus récents</button>
+        <button [class.active]="filters.sort === 'popular'" (click)="filters.sort = 'popular'; applyFilters()">Plus populaires</button>
+      </div>
+    </div>
+  }
+
+  @for (p of posts(); track p.id) {
+    <app-post-card [post]="p" (deleted)="onDeleted($event)" />
+  } @empty {
+    @if (!loading()) {
+      <div class="card empty">
+        @if (mode() === 'feed') {
+          <p>Ton fil est encore calme. Sois le premier à partager une ressource avec ta communauté !</p>
+          <a class="btn" routerLink="/publier">Publier une ressource</a>
+        } @else {
+          <p>Aucune ressource ne correspond à ces critères.</p>
+        }
+      </div>
+    }
+  }
+
+  @if (loading()) { <p class="muted" style="text-align:center">Chargement…</p> }
+  @if (!last() && !loading()) {
+    <button class="btn btn-ghost btn-block" (click)="load(page() + 1)">Afficher plus</button>
+  }
+</div>

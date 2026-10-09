@@ -1,0 +1,87 @@
+<form class="card stack" (ngSubmit)="submit()" #f="ngForm">
+  <h1>Nouvelle publication</h1>
+
+  <div class="types">
+    @for (t of typeCards; track t.type) {
+      <button type="button" class="type" [class.on]="type() === t.type" (click)="type.set(t.type)">
+        <span class="t-icon">{{ t.icon }}</span>
+        <strong>{{ t.label }}</strong>
+        <span class="hint">{{ t.hint }}</span>
+      </button>
+    }
+  </div>
+
+  @if (error()) { <div class="alert">{{ error() }}</div> }
+
+  <label class="field">Titre
+    <input name="title" [(ngModel)]="model.title" required maxlength="200"
+      placeholder="Ex. : TD corrigé — Dérivées et variations" />
+  </label>
+
+  <label class="field">{{ type() === 'QUESTION' ? 'Ta question' : withSolution() ? 'Énoncé' : 'Description' }}
+    <textarea name="content" [(ngModel)]="model.content" rows="6" maxlength="20000"></textarea>
+  </label>
+
+  @if (withSolution()) {
+    <label class="field">Corrigé <span class="hint">masqué par défaut, révélé à la demande du lecteur</span>
+      <textarea name="solution" [(ngModel)]="model.solution" rows="5" maxlength="20000"></textarea>
+    </label>
+  }
+
+  @if (type() === 'VIDEO') {
+    <label class="field">Lien vidéo <span class="hint">YouTube ou Vimeo — ou ajoute un fichier vidéo ci-dessous</span>
+      <input name="videoUrl" [(ngModel)]="model.videoUrl" type="url" placeholder="https://www.youtube.com/watch?v=…" />
+    </label>
+  }
+
+  <div class="drop" [class.over]="dragOver()" (dragover)="$event.preventDefault(); dragOver.set(true)"
+       (dragleave)="dragOver.set(false)" (drop)="onDrop($event)">
+    <p>📎 Glisse tes fichiers ici ou
+      <label class="pick">parcours<input type="file" multiple [accept]="accept()" (change)="onFiles($any($event.target).files); $any($event.target).value = ''" hidden /></label>
+    </p>
+    <p class="hint">PDF, Office, images, vidéos, audio, archives, code — 200 Mo max par fichier, 10 fichiers max</p>
+  </div>
+  @if (files().length) {
+    <ul class="file-list">
+      @for (file of files(); track $index) {
+        <li><span>{{ file.name }}</span><span class="muted small">{{ file.size | fileSize }}</span>
+          <button type="button" class="btn btn-sm btn-ghost" (click)="removeFile($index)">✕</button></li>
+      }
+    </ul>
+  }
+
+  <h2>Pour qui ?</h2>
+  <p class="muted small" style="margin:-8px 0 0">Ces informations permettent de diffuser ta publication aux bons apprenants, toutes écoles confondues.</p>
+  <div class="grid-2">
+    <label class="field">Domaine
+      <select name="fieldId" [(ngModel)]="model.fieldId">
+        @for (fd of ref()?.fields; track fd.id) { <option [ngValue]="fd.id">{{ fd.icon }} {{ fd.name }}</option> }
+      </select>
+    </label>
+    <label class="field">Niveau
+      <select name="level" [(ngModel)]="model.level">
+        @for (l of ref()?.levels; track l.code) { <option [ngValue]="l.code">{{ l.label }} ({{ l.group }})</option> }
+      </select>
+    </label>
+    <label class="field">Série <span class="hint">optionnel, lycée</span>
+      <input name="serie" [(ngModel)]="model.serie" list="series-list" placeholder="S2, L1…" />
+      <datalist id="series-list">@for (s of ref()?.series; track s) { <option [value]="s"></option> }</datalist>
+    </label>
+    <label class="field">Publier dans une communauté <span class="hint">optionnel</span>
+      <select name="communityId" [(ngModel)]="model.communityId">
+        <option [ngValue]="null">— Public (selon domaine & niveau) —</option>
+        @for (c of communities(); track c.id) { <option [ngValue]="c.id">{{ c.name }}</option> }
+      </select>
+    </label>
+  </div>
+  <label class="field">Mots-clés <span class="hint">séparés par des virgules</span>
+    <input name="tags" [(ngModel)]="model.tags" placeholder="intégrales, bac, révision" />
+  </label>
+
+  @if (progress() !== null) {
+    <div class="progress"><span [style.width.%]="progress()"></span></div>
+  }
+  <button class="btn btn-block" [disabled]="f.invalid || progress() !== null">
+    {{ progress() !== null ? 'Envoi… ' + progress() + ' %' : 'Publier' }}
+  </button>
+</form>

@@ -1,0 +1,43 @@
+.topbar {
+  position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 14px;
+  padding: 10px 24px; background: var(--surface); border-bottom: 1px solid var(--border);
+}
+.logo { font-size: 20px; font-weight: 800; color: var(--text); white-space: nowrap; span { color: var(--primary); } }
+.search { flex: 1; max-width: 560px; margin: 0 auto; input { border-radius: 999px; background: var(--surface-2); border-color: transparent; } }
+.publish { white-space: nowrap; }
+.me { position: relative; }
+.me-btn { background: none; border: 0; padding: 0; cursor: pointer; display: flex; }
+.menu {
+  position: absolute; right: 0; top: 46px; width: 240px; padding: 14px; display: flex; flex-direction: column; gap: 8px;
+  a, button { color: var(--text); background: none; border: 0; padding: 6px 0; text-align: left; font: inherit; cursor: pointer; }
+  a:hover, button:hover { color: var(--primary); }
+}
+.layout { display: grid; grid-template-columns: 260px minmax(0, 680px); gap: 28px; justify-content: center; padding: 24px 16px 80px; }
+.sidebar {
+  position: sticky; top: 84px; align-self: start; display: flex; flex-direction: column; gap: 2px;
+  max-height: calc(100vh - 100px); overflow-y: auto;
+  > a { padding: 10px 12px; border-radius: 10px; color: var(--text); font-weight: 500; }
+  > a:hover { background: var(--surface-2); }
+  > a.active { background: var(--primary-soft); color: var(--primary); font-weight: 600; }
+  h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 22px 12px 2px; }
+  .explain { margin: 0 12px 8px; }
+}
+.community { display: flex; gap: 8px; align-items: center; font-size: 14px;
+  .c-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .c-count { font-size: 12px; color: var(--muted); } }
+.main { min-width: 0; }
+.bottom-nav { display: none; }
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: minmax(0, 1fr); padding: 16px 16px 90px; }
+  .sidebar { display: none; }
+  .topbar { padding: 10px 16px; gap: 10px; }
+  .logo span, .publish { display: none; }
+  .bottom-nav {
+    display: flex; position: fixed; bottom: 0; left: 0; right: 0; z-index: 20;
+    background: var(--surface); border-top: 1px solid var(--border);
+    a { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 8px 0 10px; font-size: 18px; color: var(--muted);
+      span { font-size: 11px; } }
+    a.active { color: var(--primary); }
+  }
+}

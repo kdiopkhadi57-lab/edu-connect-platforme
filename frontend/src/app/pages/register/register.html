@@ -1,0 +1,76 @@
+<section class="hero">
+  <h1>Rejoins ta communauté d'apprentissage</h1>
+  <p>Indique ton parcours : tu seras automatiquement connecté·e aux élèves et étudiants de ton domaine,
+    de ton niveau et de ta série, quelle que soit leur école.</p>
+</section>
+<section class="panel">
+  <div class="box card stack">
+    <div class="steps"><span class="on"></span><span [class.on]="step() === 2"></span></div>
+    @if (error()) { <div class="alert">{{ error() }}</div> }
+
+    @if (step() === 1) {
+      <form class="stack" (ngSubmit)="next()" #f1="ngForm">
+        <h1>Crée ton compte</h1>
+        <label class="field">Nom complet
+          <input name="fullName" [(ngModel)]="model.fullName" required maxlength="100" autocomplete="name" />
+        </label>
+        <label class="field">E-mail
+          <input type="email" name="email" [(ngModel)]="model.email" required email autocomplete="email" />
+        </label>
+        <label class="field">Mot de passe <span class="hint">8 caractères minimum</span>
+          <input type="password" name="password" [(ngModel)]="model.password" required minlength="8" autocomplete="new-password" />
+        </label>
+        <label class="field">Je suis
+          <select name="role" [(ngModel)]="model.role" required>
+            @for (r of ref()?.roles; track r.code) { <option [value]="r.code">{{ r.label }}</option> }
+          </select>
+        </label>
+        <button class="btn btn-block" [disabled]="f1.invalid">Continuer</button>
+        <p class="muted small">Déjà inscrit·e ? <a routerLink="/connexion">Connexion</a></p>
+      </form>
+    } @else {
+      <form class="stack" (ngSubmit)="submit()" #f2="ngForm">
+        <h1>Ton parcours</h1>
+        <label class="field">Domaine d'études
+          <select name="fieldId" [(ngModel)]="model.fieldId" (ngModelChange)="fieldId.set($event)" required>
+            <option [ngValue]="null" disabled>Choisir…</option>
+            @for (f of ref()?.fields; track f.id) { <option [ngValue]="f.id">{{ f.icon }} {{ f.name }}</option> }
+          </select>
+        </label>
+        <label class="field">Niveau
+          <select name="level" [(ngModel)]="model.level" (ngModelChange)="level.set($event)" required>
+            <option value="" disabled>Choisir…</option>
+            @for (g of levelGroups(); track g[0]) {
+              <optgroup [label]="g[0]">
+                @for (l of g[1]; track l.code) { <option [value]="l.code">{{ l.label }}</option> }
+              </optgroup>
+            }
+          </select>
+        </label>
+        @if (isLycee()) {
+          <label class="field">Série
+            <input name="serie" [(ngModel)]="model.serie" (ngModelChange)="serie.set($event)" list="series" placeholder="S1, S2, L1, G…" />
+            <datalist id="series">@for (s of ref()?.series; track s) { <option [value]="s"></option> }</datalist>
+          </label>
+        }
+        <label class="field">Établissement <span class="hint">école, université ou centre de formation</span>
+          <input name="institution" [(ngModel)]="model.institution" (ngModelChange)="institution.set($event)" maxlength="150" />
+        </label>
+
+        @if (previewCommunities().length) {
+          <div class="preview">
+            <strong>Tu rejoindras automatiquement :</strong>
+            <ul>@for (c of previewCommunities(); track c) { <li>{{ c }}</li> }</ul>
+          </div>
+        }
+
+        <div class="row">
+          <button type="button" class="btn btn-ghost" (click)="step.set(1)">Retour</button>
+          <button class="btn" style="flex:1" [disabled]="f2.invalid || loading()">
+            {{ loading() ? 'Création…' : 'Créer mon compte' }}
+          </button>
+        </div>
+      </form>
+    }
+  </div>
+</section>
